@@ -133,7 +133,12 @@ OR
 
 ### Available commands
 
-    * Originate - to originate new calls between any two endpoints.
+* originate - to originate new calls between any two endpoints.
+* api - to issue any FS api command
+* bgapi - to issue any FS api command in the background
+* calls - to see the current calls on FS
+* fsctl - start/stop/restart FS
+* uuid_bridge - Bridge an endpoint to a current FS uuid (channel identifier)
 
 ## Writing applications
 
