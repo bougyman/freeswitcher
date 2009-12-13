@@ -43,6 +43,10 @@ module FSR
         self.class.cmd_name
       end
 
+      def background
+        @background.nil? ? true : @background
+      end
+
       def arguments
         []
       end

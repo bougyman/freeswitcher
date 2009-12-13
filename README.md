@@ -112,15 +112,28 @@ restart FreeSWITCH etc.
 
     >> require ‘fsr’
     => true
+
+    >> require ‘fsr/command_socket’
+    => true
     
     >> socket = FSR::CommandSocket.new
     => #<FSR::CommandSocket:0xb7a89104 @server=“127.0.0.1”,
         @socket=#<TCPSocket:0xb7a8908c>, @port=“8021”, @auth=“ClueCon”>
     
-    >> socket.status
-    >> > #<FSR::Response:0x1016acac8 ...>
+    >> o = FSC::Originate.new(:target => "sofia/gateway/carlos/8879395111", :endpoint => FSA::Bridge.new("sofia/gateway/carlos/8874166666"))
+    => #<FSR::Cmd::Originate:0x876d4c4 @target_options={:origination_caller_id_name=>"Freeswitcher", :origination_caller_id_number=>"8675309", :originate_timeout=>30, :ignore_early_media=>true}, @target="sofia/gateway/carlos/8979395111", @endpoint=#<FSR::App::Bridge:0x876d668 @options={}, @sequential=nil, @targets=["sofia/gateway/carlos/8874666666"]>>
+
+    >> socket.run(o, false) # the false argument says do not run in the background, return the actual FS response
+    => #<FSR::Response:0x853ad9c @headers={:content_type=>"api/response", :content_length=>"19"}, @content="-ERR CALL_REJECTED\n">
+
+OR
+
+    >> sock.originate(:target => "sofia/gateway/carlos/8879395111", :endpoint => FSA::Bridge.new("sofia/gateway/carlos/8874166666"))
+    => #<FSR::Response:0x85b2790 @headers={:content_type=>"command/reply", :reply_text=>"+OK Job-UUID: efc510f0-29c1-4884-b610-1a371e803bd2", :job_uuid=>"efc510f0-29c1-4884-b610-1a371e803bd2"}, @content="">
 
 ### Available commands
+
+    * Originate - to originate new calls between any two endpoints.
 
 ## Writing applications
 
