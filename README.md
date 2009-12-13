@@ -17,7 +17,7 @@ To create an inbound listener, you should subclass `FSR::Listener::Inbound` and
 add custom behaviour to it. An inbound listener subscribes to all events from
 FreeSWITCH, and lets you react on events in two different ways:
 
-1.      By overiding `on_event` which gets called every time an event arrives.
+1.      By overriding `on_event` which gets called every time an event arrives.
 
 2.      By adding an event hook with `add_event_hook`, which will get called
         every time an event with the specified name arrives.
@@ -133,7 +133,7 @@ restart FreeSWITCH etc.
 
       # `arguments` should return an array of arguments. Default is an empty
       # array.
-      def array
+      def arguments
         ["arg1", "arg2"]
       end
 
@@ -190,6 +190,7 @@ restart FreeSWITCH etc.
 
 ## Extras
 
+* Release Announcements: [http://blog.rubyists.com](http://blog.rubyists.com)
 * Website: [http://code.rubyists.com/projects/fs](http://code.rubyists.com/projects/fs)
 * Source: [http://gitorious.org/fsr](http://gitorious.org/fsr)
 * Wiki: [http://gitorious.org/fsr/pages/Home](http://gitorious.org/fsr/pages/Home)
@@ -197,6 +198,6 @@ restart FreeSWITCH etc.
 
 ## License
 
-(c) 2009 The Rubyists (Jayson Vaughn, Tj Vanderpoel, Michael Fellinger, Kevin Berry) 
+(c) 2009 The Rubyists (Jayson Vaughn, Harry Vangberg, Tj Vanderpoel, Michael Fellinger, Kevin Berry) 
 
 Distributed under the terms of the MIT license.

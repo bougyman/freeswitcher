@@ -2,6 +2,7 @@ require 'socket'
 require 'pathname'
 require 'pp'
 
+$LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__)))
 require 'fsr/listener'
 require 'fsr/command_socket'
 
