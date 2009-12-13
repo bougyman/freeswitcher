@@ -29,3 +29,5 @@ class BlackHole
 end
 
 require 'fsr'
+require 'fsr/command_socket'
+require 'fsr/listener'
