@@ -110,10 +110,10 @@ Freeswitcher also ships with a CommandSocket class, which allows you to connect
 to the FreeSWITCH management console, from which you can originate calls,
 restart FreeSWITCH etc.
 
-    >> require ‘fsr’
+    >> require 'fsr'
     => true
 
-    >> require ‘fsr/command_socket’
+    >> require 'fsr/command_socket'
     => true
     
     >> socket = FSR::CommandSocket.new
