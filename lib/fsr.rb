@@ -2,12 +2,8 @@ require 'socket'
 require 'pathname'
 require 'pp'
 
-$LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__)))
-require 'fsr/listener'
-require 'fsr/command_socket'
-
 # Author::    TJ Vanderpoel (mailto:bougy.man@gmail.com)
-# Copyright:: Copyright (c) 2009 The Rubyists (Jayson Vaughn, TJ Vanderpoel, Michael Fellinger, Kevin Berry)
+# Copyright:: Copyright (c) 2009 The Rubyists (Jayson Vaughn, Harry Vangberg, TJ Vanderpoel, Michael Fellinger, Kevin Berry)
 # License::   Distributes under the terms of the MIT License http://www.opensource.org/licenses/mit-license.php
 
 module FSR
@@ -27,6 +23,9 @@ module FSR
     Log = Logger.new(STDOUT)
     Log.level = Logger::INFO
   end
+
+  ROOT = Pathname(__FILE__).dirname.expand_path.freeze
+  $LOAD_PATH.unshift(FSR::ROOT)
 
   # When called without a block, it will start the listener that is passed as
   # first argument:
@@ -78,6 +77,9 @@ module FSR
   else
     FS_CONFIG_PATH = FS_DB_PATH = nil
   end
+
+  DEFAULT_CALLER_ID_NAME = "Freeswitcher"
+  DEFAULT_CALLER_ID_NUMBER = "8675309"
 end
 
 require "fsr/version"

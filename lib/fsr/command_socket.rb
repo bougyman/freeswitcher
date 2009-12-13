@@ -3,10 +3,11 @@ require 'fsr/response'
 
 module FSR
   class CommandSocket
+    attr_reader :last_sent
     def self.register_cmd(klass)
       define_method klass.cmd_name do |*args|
         cmd = klass.new(*args)
-        run(cmd)
+        run(cmd, cmd.background)
       end
     end
 
@@ -26,13 +27,13 @@ module FSR
     def socket
     end
 
-    def run(cmd)
-      cmd.response = command(cmd.raw)
+    def run(cmd, bgapi = true)
+      cmd.response = command("%sapi %s" % [(bgapi ? "bg" : nil), cmd.raw])
       cmd.response
     end
 
     def command(msg)
-      @socket.print "#{msg}\n\n"
+      @socket.print(@last_sent = "#{msg}\n\n")
       read_response
     end
 
