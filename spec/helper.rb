@@ -19,7 +19,7 @@ end
 Bacon.summary_on_exit
 
 class BlackHole
-  instance_methods.each { |m| undef_method m unless m =~ /^__/ }
+  instance_methods.each { |m| undef_method m unless m =~ /^__|object_id/ }
 
   def initialize(*a) end
 
