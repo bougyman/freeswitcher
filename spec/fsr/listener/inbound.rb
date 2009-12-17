@@ -2,7 +2,7 @@ require 'spec/helper'
 require 'lib/fsr'
 require "fsr/listener"
 require "fsr/listener/inbound"
-require "em/spec"
+require "em-spec/bacon"
 
 # Bare class to use for testing
 class InboundListener < FSR::Listener::Inbound

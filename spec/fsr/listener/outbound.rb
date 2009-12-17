@@ -1,7 +1,9 @@
-require "lib/fsr"
-require FSR::ROOT/".."/:spec/:helper
-require FSR::ROOT/:fsr/:listener/:outbound
-require "em/spec"
+require 'spec/helper'
+require 'lib/fsr'
+require "fsr/listener"
+require "fsr/listener/inbound"
+require "fsr/listener/outbound"
+require "em-spec/bacon"
 
 # Bare class to use for testing
 class MyListener < FSR::Listener::Outbound
