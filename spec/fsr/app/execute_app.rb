@@ -9,6 +9,6 @@ describe "Testing FSR::App::ExecuteApp" do
 
   it "executes arbitrary app with multiple argument" do
     app = FSR::App::ExecuteApp.new("log", "INFO", "foo bar")
-    log.sendmsg.should == "call-command: execute\nexecute-app-name: log\nexecute-app-arg: INFO foo bar\n\n"
+    app.sendmsg.should == "call-command: execute\nexecute-app-name: log\nexecute-app-arg: INFO foo bar\n\n"
   end
 end
