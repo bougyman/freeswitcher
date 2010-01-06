@@ -4,6 +4,7 @@ web/log/*
 RIDE*
 config/code_template.erb
 script/ride*
+tags
 tasks/ride.rake
 tasks/rspec.rake
 pkg/*
