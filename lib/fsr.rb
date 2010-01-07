@@ -25,7 +25,7 @@ module FSR
   end
 
   ROOT = Pathname(__FILE__).dirname.expand_path.freeze
-  $LOAD_PATH.unshift(FSR::ROOT)
+  $LOAD_PATH.unshift(FSR::ROOT.to_s)
 
   # When called without a block, it will start the listener that is passed as
   # first argument:
