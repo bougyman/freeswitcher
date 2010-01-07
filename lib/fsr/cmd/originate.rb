@@ -5,43 +5,70 @@ module FSR
       attr_accessor :target, :endpoint
 
       def initialize(args = {})
-        # Using an argument hash may not be the the best way to go here, but as long as we're doing
-        # so we'll type check it
-        raise(ArgumentError, "args (Passed: <<<#{args}>>>) must be a hash") unless args.kind_of?(Hash)
+        # Right now, the spec expects DEFAULT_OPTIONS to be ignored, if we
+        # change that, use the line below.
+        # given_options = DEFAULT_OPTIONS.merge(args.to_hash)
+        given_options = args.to_hash
 
-        # These are options that will precede the target address
-        if args[:target_options]
-          raise(ArgumentError, "args[:target_options] (Passed: <<<#{args[:target_options]}>>>) must be a hash") unless args[:target_options].kind_of?(Hash)
-        else
-          args[:target_options] = {}
-        end
-        @target_options = default_options(args[:target_options]) do |o|
-          o[:origination_caller_id_number] = args[:caller_id_number] if args[:caller_id_number]
-          o[:origination_caller_id_name] = args[:caller_id_name] if args[:caller_id_name]
-          if o[:timeout]
-            o[:originate_timeout] = o.delete(:timeout)
-          elsif args[:timeout]
-            o[:originate_timeout] = args[:timeout]
+        @target_options = {}
+        @endpoint = @target = nil
+
+        given_options.each do |key, value|
+          case key
+          when :caller_id_number, :origination_caller_id_number
+            @target_options[:origination_caller_id_number] = value
+          when :caller_id_name, :origination_caller_id_name
+            @target_options[:origination_caller_id_name] = value
+          when :timeout, :originate_timeout
+            @target_options[:originate_timeout] = timeout = value.to_int
+
+            unless timeout > 0
+              raise ArgumentError, "Given :timeout must be positive integer"
+            end
+          when :target
+            @target = value.to_str
+
+            if @target.empty?
+              raise ArgumentError, "Cannot originate without given :target"
+            end
+          when :application
+            next if @endpoint
+
+            if @endpoint.kind_of?(FSR::App::Application)
+              @endpoint = value
+            else
+              raise ArgumentError, "Given :endpoint is no FSR::App::Application"
+            end
+          when :endpoint
+            @endpoint = value.to_str
+
+            if @endpoint.empty?
+              raise ArgumentError, "Cannot originate without given :endpoint"
+            end
+          else
+            @target_options[key] = value
           end
-          o
         end
-        raise(ArgumentError, "Origination timeout (#{@target_options[:originate_timeout]}) must be a positive integer") unless @target_options[:originate_timeout].to_i > 0
-        
-        @target = args[:target] # The target address to call
-        raise(ArgumentError, "Cannot originate without a :target set") unless @target.to_s.size > 0
-        # The origination endpoint (can be an extension (use a string) or application)
-        @endpoint = args[:endpoint] || args[:application]
-        raise(ArgumentError, "Cannot originate without an :endpoint set") unless @endpoint.to_s.size > 0
-
       end
 
       # This method builds the API command to send to the freeswitch event socket
       def raw
-        target_opts = @target_options.keys.sort { |a,b| a.to_s <=> b.to_s }.map { |k| "%s=%s" % [k, @target_options[k]] }.join(",")
+        target_opts = @target_options.
+          sort_by{|key, value| key.to_s }.
+          map{|key, value| "#{key}=#{value}" if key && value }.
+          compact
+
+        target =
+          if target_opts.empty?
+            "#{@target}"
+          else
+            "{#{target_opts.join(',')}}#{@target}"
+          end
+
         if @endpoint.kind_of?(String)
-          orig_command = "originate {#{target_opts}}#{@target} #{@endpoint}"
+          "bgapi originate #{target} #{@endpoint}"
         elsif @endpoint.kind_of?(FSR::App::Application)
-          orig_command = "originate {#{target_opts}}#{@target} '&#{@endpoint.raw}'"
+          "bgapi originate #{target} '&#{@endpoint.raw}'"
         else
           raise "Invalid endpoint"
         end
