@@ -17,25 +17,25 @@ describe FSR::Cmd::Command do
   end
 
   should "have default command" do
-    @cmd.raw.should.should == "api command"
+    @cmd.raw.should.should == "bgapi command"
   end
 
   should "use #cmd_name as command name" do
     def @cmd.cmd_name; "foo_cmd" end
 
-    @cmd.raw.should == "api foo_cmd"
+    @cmd.raw.should == "bgapi foo_cmd"
   end
 
   should "send arguments" do
     def @cmd.arguments; ["bar", "baz"] end
 
-    @cmd.raw.should == "api command bar baz"
+    @cmd.raw.should == "bgapi command bar baz"
   end
 
   should "have background switch" do
-    @cmd.background = true
+    @cmd.background = false
 
-    @cmd.raw.should == "bgapi command"
+    @cmd.raw.should == "api command"
   end
 
   should "get/set response" do

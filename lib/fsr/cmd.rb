@@ -22,8 +22,9 @@ module FSR
         :originate_timeout => 30,
         :ignore_early_media => true
       }
-      
+
       protected
+
       def default_options(args = {}, defaults = nil, &block)
         opts = if defaults.nil?
           DEFAULT_OPTIONS.merge(args)
@@ -35,6 +36,7 @@ module FSR
       end
 
       public
+
       def self.cmd_name
         name.split("::").last.downcase
       end
@@ -57,9 +59,11 @@ module FSR
 
       # I don't like the look of this method. ~harry
       def raw
-        msg = " %s" % cmd_name
-        msg += " %s" % arguments.join(" ") if arguments.any?
-        msg
+        if background
+          ['bgapi', cmd_name, *arguments].join(' ')
+        else
+          ['api', cmd_name, *arguments].join(' ')
+        end
       end
     end
   end
