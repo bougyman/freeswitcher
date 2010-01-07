@@ -7,7 +7,7 @@ module FSR::Cmd
     end
 
     def arguments
-      [@cause]
+      [@cause].compact
     end
   end
 
