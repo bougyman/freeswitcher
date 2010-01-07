@@ -101,11 +101,11 @@ shared "api commands" do
 
       should "only send one command at a time" do
         @listener.receive_data("Content-Type: command/reply\nContent-Length: 22\n\nEvent-Name: API_TEST\n\n")
-        @listener.read_data.should == "api foo\n\n"
+        @listener.read_data.should == "bgapi foo\n\n"
         @listener.read_data.should == nil
 
         @listener.receive_data("Content-Type: api/response\nReply-Text: +OK\n\n")
-        @listener.read_data.should == "api foo bar baz\n\n"
+        @listener.read_data.should == "bgapi foo bar baz\n\n"
         @listener.read_data.should == nil
       end
     end
@@ -132,7 +132,7 @@ shared "api commands" do
 
         # response to "bar"
         @listener.receive_data("Content-Type: api/response\nContent-Length: 3\n\n+OK\n\n")
-        @listener.read_data.should == "api baz\n\n"
+        @listener.read_data.should == "bgapi baz\n\n"
       end
     end
 

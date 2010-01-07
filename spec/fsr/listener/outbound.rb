@@ -244,7 +244,7 @@ describe "Outbound listener with both apps and api calls" do
     @listener.read_data.should == "sendmsg\n" + SampleApp.new("foo").sendmsg
     @listener.receive_data("Content-Type: command/reply\nContent-Length: 3\n\n+OK\n\n")
 
-    @listener.read_data.should == "api bar\n\n"
+    @listener.read_data.should == "bgapi bar\n\n"
     @listener.receive_data("Content-Type: api/response\nContent-Length: 3\n\n+OK\n\n")
 
     @listener.read_data.should == "sendmsg\n" + SampleApp.new("baz").sendmsg

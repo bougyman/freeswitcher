@@ -7,7 +7,7 @@ describe FSR::Cmd::GlobalGetvar do
   end
 
   should "call global_getvar" do
-    @cmd.raw.should == "api global_getvar foo"
+    @cmd.raw.should == "bgapi global_getvar foo"
   end
 
   should "return value" do

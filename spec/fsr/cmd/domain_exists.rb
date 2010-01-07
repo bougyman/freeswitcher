@@ -7,7 +7,7 @@ describe FSR::Cmd::DomainExists do
   end
 
   should "check if domain exists" do
-    @cmd.raw.should == "api domain_exists domain"
+    @cmd.raw.should == "bgapi domain_exists domain"
   end
 
   should "parse true/false return value" do

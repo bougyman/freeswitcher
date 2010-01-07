@@ -20,7 +20,7 @@ describe FSR::Cmd::Status do
   end
 
   should "request status" do
-    @cmd.raw.should == "api status"
+    @cmd.raw.should == "bgapi status"
   end
 
   describe "response" do
