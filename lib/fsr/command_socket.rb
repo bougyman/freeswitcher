@@ -3,33 +3,37 @@ require 'fsr/response'
 
 module FSR
   class CommandSocket
-    attr_reader :last_sent
+    attr_reader :last_sent, :server, :port
+
     def self.register_cmd(klass)
       define_method klass.cmd_name do |*args|
         cmd = klass.new(*args)
-        run(cmd, cmd.background)
+        run(cmd)
       end
     end
 
-    def initialize(args={})
-      @server   = args[:server] || "127.0.0.1"
-      @port     = args[:port] || "8021"
-      @auth     = args[:auth] || "ClueCon"
+    def initialize(args = {})
+      @server   = (args[:server] || "127.0.0.1").to_str
+      @port     = (args[:port] || 8021).to_int
+      @auth     = (args[:auth] || "ClueCon").to_str
 
       connect unless args[:connect] == false
     end
 
     def connect
-      @socket = TCPSocket.open(@server, @port)
-      command "auth #{@auth}"
+      connect_with(TCPSocket.open(@server, @port))
     end
 
-    def socket
+    # Connect with given +socket+.
+    # Ignores all settings given to [initialize].
+    def connect_with(socket)
+      @socket = socket
+      _, @port, _, @server = socket.peeraddr
+      command "auth #@auth"
     end
 
-    def run(cmd, bgapi = true)
-      cmd.response = command("%sapi %s" % [(bgapi ? "bg" : nil), cmd.raw])
-      cmd.response
+    def run(cmd)
+      cmd.response = command(cmd.raw)
     end
 
     def command(msg)
@@ -39,8 +43,9 @@ module FSR
 
     def read_response
       response = FSR::Response.new
-      until response.command_reply? or response.api_response?
-        response.headers = read_headers 
+
+      until response.command_reply? || response.api_response?
+        response.headers = read_headers
       end
 
       length = response.headers[:content_length].to_i
@@ -50,13 +55,14 @@ module FSR
     end
 
     def read_headers
-      headers = ""
+      headers = []
 
-      while line = @socket.gets and !line.chomp.empty?
-        headers += line
+      while line = @socket.gets
+        break if line == "\n"
+        headers << line
       end
 
-      headers
+      headers.join
     end
   end
 end
