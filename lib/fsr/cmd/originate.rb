@@ -8,7 +8,7 @@ module FSR
         # Right now, the spec expects DEFAULT_OPTIONS to be ignored, if we
         # change that, use the line below.
         # given_options = DEFAULT_OPTIONS.merge(args.to_hash)
-        given_options = traits.merge(args.to_hash)
+        given_options = args.to_hash
 
         @target_options = {}
         @endpoint = @target = nil
