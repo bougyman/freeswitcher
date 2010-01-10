@@ -8,11 +8,12 @@ module FSR
         # Right now, the spec expects DEFAULT_OPTIONS to be ignored, if we
         # change that, use the line below.
         # given_options = DEFAULT_OPTIONS.merge(args.to_hash)
-        given_options = if TRAITS[FSR::Cmd::Originate]
-                          TRAITS[FSR::Cmd::Originate].merge(args.to_hash)
-                        else
-                          args.to_hash
-                        end
+        given_options =
+          if originate_trait = ancestral_trait
+            originate_trait.merge(args.to_hash)
+          else
+            args.to_hash
+          end
 
         @target_options = {}
         @endpoint = @target = nil
