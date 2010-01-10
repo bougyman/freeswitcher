@@ -1,6 +1,7 @@
 require 'fsr/command_socket'
 require 'fsr/listener/base'
 require 'fsr/response'
+require 'fsr/traited'
 
 module FSR
   module Cmd
@@ -13,6 +14,7 @@ module FSR
     end
 
     class Command
+      include ::FSR::Traited
       attr_reader :response
       attr_accessor :background
 

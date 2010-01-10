@@ -7,6 +7,13 @@ describe "Testing FSR::Cmd::Originate" do
     originate.raw.should == "bgapi originate user/bougyman 4000"
   end
 
+  should "originate call to endpoint, with traits" do
+    FSR::Cmd::Originate.trait :caller_id_number => "8675309"
+    originate = FSR::Cmd::Originate.new(:target => 'user/bougyman', :endpoint => "4000")
+    originate.raw.should.match %r|^bgapi originate \{\S+\}user/bougyman 4000$|
+    originate.raw.should.match /caller_id_number=8675309/
+  end
+
   should "send specified variables" do
     originate = FSR::Cmd::Originate.new :target => 'user/bougyman', :endpoint => '1234',
                                         :ignore_early_media => true,
