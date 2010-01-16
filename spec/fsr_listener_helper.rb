@@ -1,7 +1,6 @@
 require File.join(File.expand_path("../", __FILE__), "../lib/fsr")
 require FSR::ROOT/".."/:spec/:helper
 require FSR::ROOT/:fsr/:listener/:outbound
-gem "tmm1-em-spec"
 require "em/spec"
 require "fileutils"
 
