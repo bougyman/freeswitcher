@@ -105,7 +105,7 @@ module FSR
       end
 
       def subscribe_to_event(event, sub_events = [])
-        sub_events = [sub_events] unless sub_events.respond_to?(:each)
+        sub_events = [sub_events] unless sub_events.kind_of?(Array)
         @subscribed_events << event
         @subscribed_sub_events += sub_events
         if custom = @subscribed_events.delete(:CUSTOM)

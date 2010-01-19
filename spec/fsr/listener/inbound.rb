@@ -39,6 +39,11 @@ class InboundListener2 < InboundListener
   end
 end
 
+class InboundListener3 < InboundListener2
+  def before_session
+    add_event(:CUSTOM, "fifo::info") { |e| @custom_event = e }
+  end
+end
 describe "Testing FSR::Listener::Inbound" do
   it "defines #post_init" do
     FSR::Listener::Inbound.method_defined?(:post_init).should == true
@@ -69,6 +74,13 @@ EM.describe InboundListener do
     @listener.custom_event.should.equal @listener.recvd_event.first
     @listener2.receive_data("Content-Length: 22\n\nEvent-Name: TEST_EVENT\n\n")
     @listener2.test_event.content[:event_name].should.equal "TEST_EVENT"
+    done
+  end
+
+  should "be able to add custom event hooks with sub events" do
+    listener = InboundListener3.new(1234, {:auth => 'SecretPassword'})
+    @listener.receive_data("Content-Length: 22\n\nEvent-Name: CUSTOM\n\n")
+    @listener.custom_event.should.equal @listener.recvd_event.first
     done
   end
 
