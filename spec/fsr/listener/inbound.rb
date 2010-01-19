@@ -3,14 +3,19 @@ require 'lib/fsr'
 require "fsr/listener"
 require "fsr/listener/inbound"
 require "em-spec/bacon"
+EM.spec_backend = EventMachine::Spec::Bacon
 
 # Bare class to use for testing
 class InboundListener < FSR::Listener::Inbound
-  attr_accessor :test_event
+  attr_accessor :custom_event
 
   # Stub error? out
   def error?
     false
+  end
+
+  def before_session
+    add_event(:CUSTOM) { |e| @custom_event = e }
   end
 
   def initialize(*args)
@@ -18,7 +23,7 @@ class InboundListener < FSR::Listener::Inbound
     @test_event = nil
   end
 
-  def on_event
+  def on_event(event)
     recvd_event << event
   end
 
@@ -28,8 +33,9 @@ class InboundListener < FSR::Listener::Inbound
 end
 
 class InboundListener2 < InboundListener
+  attr_accessor :test_event
   def before_session
-    add_event(:TEST_EVENT) {recvd_event << event}
+    add_event(:TEST_EVENT) { |e| @test_event = e}
   end
 end
 
@@ -59,17 +65,19 @@ EM.describe InboundListener do
   end
 
   should "be able to add custom event hooks in the pre_session" do
+    @listener.receive_data("Content-Length: 22\n\nEvent-Name: CUSTOM\n\n")
+    @listener.custom_event.should.equal @listener.recvd_event.first
     @listener2.receive_data("Content-Length: 22\n\nEvent-Name: TEST_EVENT\n\n")
-    @listener2.recvd_event.first.content[:event_name].should.equal "TEST_EVENT"
+    @listener2.test_event.content[:event_name].should.equal "TEST_EVENT"
     done
   end
 
   should "be able to add custom event hooks" do
-    listener = @listener
-    FSL::Inbound.add_event_hook(:HANGUP_EVENT) {listener.test_event = event}
-    @listener.test_event.should.equal nil
-    @listener.receive_data("Content-Length: 24\n\nEvent-Name: HANGUP_EVENT\n\n")
-    @listener.test_event.content[:event_name].should.equal "HANGUP_EVENT"
+    FSL::Inbound.add_event_hook(:HANGUP_EVENT) { |instance, event| instance.test_event = event }
+    listener = InboundListener2.new(1234, {:auth => 'SecretPassword'})
+    listener.test_event.should.equal nil
+    listener.receive_data("Content-Length: 24\n\nEvent-Name: HANGUP_EVENT\n\n")
+    listener.test_event.content[:event_name].should.equal "HANGUP_EVENT"
     done
   end
 

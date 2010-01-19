@@ -1,3 +1,19 @@
+[bd98082 | 2010-01-16 04:41:58 UTC] TJ Vanderpoel <TJ Vanderpoel tj@rubyists.com>
+
+  * modified to work with em-spec 0.2
+
+[15f8138 | 2010-01-16 03:47:44 UTC] TJ Vanderpoel <TJ Vanderpoel tj@rubyists.com>
+
+  * removed old github-gem reference, em-spec is now on rubyforge
+
+[45b02a3 | 2009-12-17 22:20:30 UTC] SS <SudeshnaSen@shaunak.nationwide-recovery.com>
+
+  * resolved requirements
+
+[01589c4 | 2009-11-18 06:46:00 UTC] TJ Vanderpoel <TJ Vanderpoel tj@rubyists.com>
+
+  * updated authors and changelog for next release
+
 [1f5537d | 2009-11-18 06:43:28 UTC] TJ Vanderpoel <TJ Vanderpoel tj@rubyists.com>
 
   * commented out more debugging

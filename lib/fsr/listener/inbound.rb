@@ -6,7 +6,7 @@ require 'fsr/listener/header_and_content_response.rb'
 module FSR
   module Listener
     class Inbound < EventMachine::Protocols::HeaderAndContentProtocol
-      attr_reader :auth, :hooks, :event, :server, :port
+      attr_reader :auth, :hooks, :server, :port
 
       HOOKS = {}
 
@@ -47,11 +47,19 @@ module FSR
       def authorize_and_register_for_events
         FSR::Log.info "Connection established. Authorizing..."
         say("auth #{@auth}")
-        say('event plain ALL')
+        add_class_hooks
+        before_session
       end
 
       def before_session 
       end
+
+      def  add_class_hooks
+        HOOKS.each do |(key, value)| 
+          add_event(key, &value)
+        end
+      end
+      private :before_session, :add_class_hooks
 
       # receive_request is the callback method when data is recieved from the socket
       #
@@ -60,13 +68,19 @@ module FSR
       def receive_request(header, content)
         hash_header = headers_2_hash(header)
         hash_content = headers_2_hash(content)
-        @event = HeaderAndContentResponse.new({:headers => hash_header, :content => hash_content})
+        event = HeaderAndContentResponse.new({:headers => hash_header, :content => hash_content})
         event_name = event.content[:event_name].to_s.strip
         unless event_name.empty?
-          instance_eval &HOOKS[event_name.to_sym] unless HOOKS[event_name.to_sym].nil?
-          instance_eval &@hooks[event_name.to_sym] unless @hooks[event_name.to_sym].nil?
+          if hook = @hooks[event_name.to_sym]
+            case hook.arity
+            when 1
+              @hooks[event_name.to_sym].call(event)
+            when 2
+              @hooks[event_name.to_sym].call(self, event)
+            end
+          end
         end
-        on_event
+        on_event(event)
       end
 
       # say encapsulates #send_data for the user
@@ -87,7 +101,7 @@ module FSR
       #
       # param event The triggered event object
       # return event The triggered event object
-      def on_event
+      def on_event(event)
         event
       end
 
@@ -120,8 +134,6 @@ module FSR
       def del_event(event)
         @hooks.delete(event)  
       end
-
-
 
     end
 

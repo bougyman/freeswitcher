@@ -70,7 +70,6 @@ tasks/manifest.rake
 tasks/release.rake
 tasks/reversion.rake
 tasks/setup.rake
-tasks/spec.rake
 tasks/yard.rake
 spec/helper.rb
 spec/fsr_listener_helper.rb
