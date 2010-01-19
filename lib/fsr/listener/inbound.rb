@@ -6,7 +6,7 @@ require 'fsr/listener/header_and_content_response.rb'
 module FSR
   module Listener
     class Inbound < EventMachine::Protocols::HeaderAndContentProtocol
-      attr_reader :auth, :hooks, :server, :port
+      attr_reader :auth, :hooks, :server, :port, :subscribed_events, :subscribed_sub_events
 
       HOOKS = {}
 
@@ -15,6 +15,8 @@ module FSR
         @auth = args[:auth] || "ClueCon"
         @host = args[:host]
         @port = args[:port]
+        @subscribed_events = []
+        @subscribed_sub_events = []
         @hooks = {}
       end
 
@@ -47,19 +49,13 @@ module FSR
       def authorize_and_register_for_events
         FSR::Log.info "Connection established. Authorizing..."
         say("auth #{@auth}")
-        add_class_hooks
         before_session
       end
 
       def before_session 
       end
 
-      def  add_class_hooks
-        HOOKS.each do |(key, value)| 
-          add_event(key, &value)
-        end
-      end
-      private :before_session, :add_class_hooks
+      private :before_session
 
       # receive_request is the callback method when data is recieved from the socket
       #
@@ -71,12 +67,30 @@ module FSR
         event = HeaderAndContentResponse.new({:headers => hash_header, :content => hash_content})
         event_name = event.content[:event_name].to_s.strip
         unless event_name.empty?
-          if hook = @hooks[event_name.to_sym]
+          # Special case for ALL in instance level @hooks
+          if hook = @hooks[:ALL]
+            hook.call(event)
+          end
+          # Special case for ALL in class level HOOKS
+          if hook = HOOKS[:ALL]
             case hook.arity
             when 1
-              @hooks[event_name.to_sym].call(event)
+              hook.call(event)
             when 2
-              @hooks[event_name.to_sym].call(self, event)
+              hook.call(self, event)
+            end
+          end
+          # General event matching, only on Event-Name, for instance level @hooks
+          if hook = @hooks[event_name.to_sym]
+            hook.call(event)
+          end
+          # General event matching, only on Event-Name, for class-level HOOKS
+          if hook = HOOKS[event_name.to_sym]
+            case hook.arity
+            when 1
+              hook.call(event)
+            when 2
+              hook.call(self, event)
             end
           end
         end
@@ -88,6 +102,17 @@ module FSR
       # param line Line of text to send to the socket
       def say(line)
         send_data("#{line}\r\n\r\n")
+      end
+
+      def subscribe_to_event(event, sub_events = [])
+        sub_events = [sub_events] unless sub_events.respond_to?(:each)
+        @subscribed_events << event
+        @subscribed_sub_events += sub_events
+        if custom = @subscribed_events.delete(:CUSTOM)
+          say "event plain #{@subscribed_events.join(" ")} CUSTOM #{@subscribed_sub_events.join(" ")}"
+        else
+          say "event plain #{@subscribed_events.join(" ")}"
+        end
       end
 
       # api encapsulates #say("api blah") for the user
@@ -109,7 +134,8 @@ module FSR
       #
       # @param event The event to trigger the block on.  Examples, :CHANNEL_CREATE, :CHANNEL_DESTROY, etc
       # @param block The block to execute when the event is triggered
-      def self.add_event_hook(event, &block)
+      def self.add_event_hook(event, sub_events = [], &block)
+        ObjectSpace.each_object { |e| e.subscribe_to_event(event, sub_events) if e.class.ancestors.include?(FSR::Listener::Inbound) }
         HOOKS[event] = block 
       end
 
@@ -124,7 +150,8 @@ module FSR
       #
       # @param event The event to trigger the block on.  Examples, :CHANNEL_CREATE, :CHANNEL_DESTROY, etc
       # @param block The block to execute when the event is triggered
-      def add_event(event, &block)
+      def add_event(event, sub_events = [], &block)
+        subscribe_to_event(event, sub_events)
         @hooks[event] = block 
       end
 
