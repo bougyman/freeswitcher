@@ -1,3 +1,20 @@
+[1351829 | 2010-01-19 20:40:11 UTC] TJ Vanderpoel <TJ Vanderpoel tj@rubyists.com>
+
+  * Inbound listener changes to support sub-events for CUSTOM
+
+[af361eb | 2010-01-19 20:23:16 UTC] TJ Vanderpoel <TJ Vanderpoel tj@rubyists.com>
+
+  * Completed work on inbound listener, to subscribe to events
+
+[50f00d3 | 2010-01-19 17:46:30 UTC] TJ Vanderpoel <TJ Vanderpoel tj@rubyists.com>
+
+  * Fixed inbound listener and completed spec fixes for new em-spec
+
+    * HOOKS in inbound listener now allow passing of self as the first arg
+      if your hook block's arity is 2
+    
+    * Inbound listener guaranteed to call before_session again
+
 [bd98082 | 2010-01-16 04:41:58 UTC] TJ Vanderpoel <TJ Vanderpoel tj@rubyists.com>
 
   * modified to work with em-spec 0.2

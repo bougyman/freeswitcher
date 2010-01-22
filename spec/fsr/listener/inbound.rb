@@ -9,7 +9,10 @@ EM.spec_backend = EventMachine::Spec::Bacon
 class InboundListener < FSR::Listener::Inbound
   attr_accessor :custom_event
 
-  # Stub error? out
+  # Stub error? out, do this to force session establishment
+  # Alternatively, you can 
+  #   InboundListener.new.authorize_and_register_for_events
+  # explicitly
   def error?
     false
   end
@@ -70,7 +73,9 @@ EM.describe InboundListener do
   end
 
   should "be able to add custom event hooks on instances in the pre_session (before_session)" do
-    @listener.receive_data("Content-Length: 22\n\nEvent-Name: CUSTOM\n\n")
+    @listener.receive_data("Content-Length: 18\n\nEvent-Name: CUSTOM\n\n")
+    @listener.custom_event.should.not.be.nil
+    @listener.custom_event.content[:event_name].should == "CUSTOM"
     @listener.custom_event.should.equal @listener.recvd_event.first
     @listener2.receive_data("Content-Length: 22\n\nEvent-Name: TEST_EVENT\n\n")
     @listener2.test_event.content[:event_name].should.equal "TEST_EVENT"

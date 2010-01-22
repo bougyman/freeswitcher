@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{freeswitcher}
-  s.version = "0.4.7"
+  s.version = "0.4.10"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jayson Vaughn", "Michael Fellinger", "Kevin Berry", "TJ Vanderpoel"]
-  s.date = %q{2010-01-19}
+  s.date = %q{2010-01-22}
   s.description = %q{=========================================================
 FreeSWITCHeR
 Copyright (c) 2009 The Rubyists (Jayson Vaughn, Tj Vanderpoel, Michael Fellinger, Kevin Berry) 
