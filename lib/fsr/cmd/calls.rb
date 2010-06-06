@@ -30,7 +30,7 @@ module FSR
             require "csv"
             calls = CSV.parse(call_info)
           end
-          return calls[1 .. -1].map { |c| FSR::Model::Call.new(*c) }
+          return calls[1 .. -1].map { |c| FSR::Model::Call.new(calls[0],*c) }
         end
         nil
       end
