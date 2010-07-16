@@ -17,7 +17,7 @@ module FSR
       def run(api_method = :api)
         orig_command = "%s %s" % [api_method, raw]
         Log.debug "saying #{orig_command}"
-        @fs_socket.say(orig_command)
+        @fs_socket.say(orig_command)["body"] rescue nil
       end
     
       # This method builds the API command to send to the freeswitch event socket
