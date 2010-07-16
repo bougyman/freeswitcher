@@ -32,7 +32,7 @@ module FSR
           end
           return calls[1 .. -1].map { |c| FSR::Model::Call.new(calls[0],*c) }
         end
-        nil
+        []
       end
 
       # This method builds the API command to send to the freeswitch event socket
