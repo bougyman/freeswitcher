@@ -1,17 +1,18 @@
 require "fsr/app"
 module FSR
   module Cmd
-    class Calls < Command
+    class Channels < Command
 
       include Enumerable
       def each(&block)
-        @calls ||= run
-        if @calls
-          @calls.each { |call| yield call }
+        @channels ||= run
+        if @channels
+          @channels.each { |call| yield call }
         end
       end
 
-      def initialize(fs_socket = nil)
+      def initialize(fs_socket = nil, distinct = true)
+        @distinct = distinct
         @fs_socket = fs_socket # FSR::CommandSocket obj
       end
 
@@ -22,25 +23,25 @@ module FSR
         resp = @fs_socket.say(orig_command)
         unless resp["body"] == "0 total."
           call_info, count = resp["body"].split("\n\n")
-          require "fsr/model/call"
+          require "fsr/model/channel"
           begin
             require "fastercsv"
-            @calls = FCSV.parse(call_info)
+            @channels = FCSV.parse(call_info)
           rescue LoadError
             require "csv"
-            @calls = CSV.parse(call_info)
+            @channels = CSV.parse(call_info)
           end
-          return @calls[1 .. -1].map { |c| FSR::Model::Call.new(@calls[0],*c) }
+          return @channels[1 .. -1].map { |c| FSR::Model::Channel.new(@channels[0],*c) }
         end
         []
       end
 
       # This method builds the API command to send to the freeswitch event socket
       def raw
-        orig_command = "show calls"
+        orig_command = @distinct ? "show distinct_channels" : "show channels"
       end
     end
 
-    register(:calls, Calls)
+    register(:channels, Channels)
   end
 end
