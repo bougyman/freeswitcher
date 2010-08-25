@@ -6,12 +6,12 @@ describe "Testing FSR::Cmd::Channels" do
   ## Channels ##
   # Interface to channels
   it "FSR::Cmd::Channels should send show channels" do
-    sofia = FSR::Cmd::Channels.new
+    sofia = FSR::Cmd::Channels.new(nil, false)
     sofia.raw.should == "show channels"
   end
 
   it "FSR::Cmd::Channels should send show channels" do
-    sofia = FSR::Cmd::Channels.new(true)
+    sofia = FSR::Cmd::Channels.new(nil, true)
     sofia.raw.should == "show distinct_channels"
   end
 
