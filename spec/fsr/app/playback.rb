@@ -9,3 +9,18 @@ describe "Testing FSR::App::Playback" do
   end
 
 end
+
+describe "Testing FSR::App::Playback - handling of non-existant files" do
+
+  it "Raise if files specifed absolutely aren't present" do
+    lambda { FSR::App::Playback.new("/path/non-existing.wav") }.
+      should.raise(Errno::ENOENT)
+  end
+
+  it "Not raise if not an absolute file" do
+    file_name = File.expand_path(__FILE__)
+    lambda { FSR::App::Playback.new("shout://scfire-ntc-aa01.stream.aol.com/stream/1035") }.
+      should.not.raise(Errno::ENOENT)
+  end
+
+end

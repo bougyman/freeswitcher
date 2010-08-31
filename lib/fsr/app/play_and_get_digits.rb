@@ -1,8 +1,13 @@
 require "fsr/app"
+require 'fsr/file_methods'
+
 module FSR
   #http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_play_and_get_digits
   module App
     class PlayAndGetDigits < Application
+
+      include ::FSR::App::FileMethods
+
       attr_reader :chan_var
       DEFAULT_ARGS = {:min => 0, :max => 10, :tries => 3, :timeout => 7000, :terminators => ["#"], :chan_var => "fsr_read_dtmf", :regexp => '\d'}
 
@@ -30,6 +35,9 @@ module FSR
         @chan_var = arg_hash[:chan_var]
         @terminators = arg_hash[:terminators]
         @regexp = arg_hash[:regexp]
+
+        raise unless test_files(@sound_file, @invalid_file)
+
       end
 
       def arguments

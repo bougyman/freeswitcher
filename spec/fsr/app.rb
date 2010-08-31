@@ -4,5 +4,7 @@ describe "Basic FSR::App module" do
     require "fsr/app"
     FSA.should == FSR::App 
   end
+
+
 end
 
