@@ -3,14 +3,12 @@ module FSR
     module FileMethods
       def test_files *files
         files.each do |file|
-
-          if file =~ /^\//
-            raise Errno::ENOENT unless File.exists? file
-          end
+          next unless file =~ /^\//
+          next if File.open(file){|io| io.stat.file? }
+          raise(ArgumentError, "No such file - #{file}") 
         end
         true
       end
     end
-
   end
 end
