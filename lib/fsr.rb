@@ -34,7 +34,10 @@ module FSR
   end
 
   ROOT = Pathname(__FILE__).dirname.expand_path.freeze
-  $LOAD_PATH.unshift(FSR::ROOT)
+  $LOAD_PATH.unshift(FSR::ROOT.to_s)
+
+  FSR_ROOT = Pathname(__FILE__).join("..").dirname.expand_path.freeze
+  $LOAD_PATH.unshift(FSR::FSR_ROOT.to_s)
 
   # Load all FSR::Cmd classes
   def self.load_all_commands(retrying = false)
