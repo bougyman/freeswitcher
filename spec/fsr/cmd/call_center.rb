@@ -22,7 +22,7 @@ describe "Testing FSR::Cmd::Callcenter" do
 
   it "FSR::Cmd::Callcenter should set an attribute of an agent " do
     cmd = FSR::Cmd::CallCenter.new nil, :agent
-    cmd.set("1000@default", :contact, 'user/1000').raw.should == "callcenter_config agent set contact 1000@default 'user/1000'"
+    cmd.set("1000@default", :contact, 'user/1000').raw.should == "callcenter_config agent set contact '1000@default' 'user/1000'"
   end
 
   it "FSR::Cmd::Callcenter should list tiers " do

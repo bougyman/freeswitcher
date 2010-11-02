@@ -37,7 +37,7 @@ module FSR
 
 
       def set_agent(agent, field, value)
-        ["set", field.to_s, agent, "'#{value}'"].compact
+        ["set", field.to_s,"'#{agent}'", "'#{value}'"].compact
       end
 
       def set_tier(agent, queue, field, value)
