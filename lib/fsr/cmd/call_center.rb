@@ -10,19 +10,28 @@ module FSR
       end
 
       def list_agent
-        ["list"]        
+        ["list"]
       end
 
-      def list_tier_queue(queue)
-        ["list", queue]        
+      def list_tier(queue)
+        ["list", queue]
+      end
+
+      def list_queue(queue=nil)
+        ["list", queue].compact
       end
 
       def list(*args)
-        @cmd = if(@config_type == :agent)
-                  list_agent *args
-                else
-                  list_tier_queue *args
-                end
+        @cmd = case @config_type
+        when :agent
+          list_agent(*args)
+        when :tier
+          list_tier(*args)
+        when :queue
+          list_queue(*args)
+        else
+          raise "no such config_type #{@config_type}"
+        end
         self
       end
 
@@ -67,7 +76,7 @@ module FSR
         self
       end
 
-      protected :list_agent, :list_tier_queue, :set_agent, :set_tier, :add_tier, :add_agent
+      protected :list_agent, :list_tier, :list_queue, :set_agent, :set_tier, :add_tier, :add_agent
       def del(agent, queue = nil)
         @cmd = ["del", queue, agent]        
         self
