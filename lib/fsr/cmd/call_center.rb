@@ -22,6 +22,7 @@ module FSR
       end
 
       def list(*args)
+        @listing = true
         @cmd = case @config_type
         when :agent
           list_agent(*args)
@@ -45,6 +46,7 @@ module FSR
       end
 
       def set(agent, *args)
+        @listing = false
         @cmd = case @config_type
         when :agent
           set_agent(agent, *args)
@@ -65,6 +67,7 @@ module FSR
       end
 
       def add(agent, *args)
+        @listing = false
         @cmd = case @config_type
         when :agent
           add_agent(agent, *args)
@@ -78,6 +81,7 @@ module FSR
 
       protected :list_agent, :list_tier, :list_queue, :set_agent, :set_tier, :add_tier, :add_agent
       def del(agent, queue = nil)
+        @listing = false
         @cmd = ["del", queue, agent]        
         self
       end
@@ -85,19 +89,23 @@ module FSR
       def run(api_method = :api)
         orig_command = "%s %s" % [api_method, raw]
         resp = @fs_socket.say(orig_command)
-        if resp["body"].match(/^([^|]*\|[^|]*)+/)
-          require "csv"
-          csv = CSV.parse(resp["body"], :col_sep => '|', :headers => true)
-          case @config_type
-          when :tier
-            require "fsr/model/tier"
-            csv.to_a[1 .. -2].map { |c| FSR::Model::Tier.new(csv.headers, *c) }
-          when :queue
-            require "fsr/model/queue"
-            csv.to_a[1 .. -2].map { |c| FSR::Model::Queue.new(csv.headers, *c) }
-          when :agent
-            require "fsr/model/agent"
-            csv.to_a[1 .. -2].map { |c| FSR::Model::Agent.new(csv.headers, *c) }
+        if @listing
+          if resp["body"].match(/^([^|]*\|[^|]*)+/)
+            require "csv"
+            csv = CSV.parse(resp["body"], :col_sep => '|', :headers => true)
+            case @config_type
+            when :tier
+              require "fsr/model/tier"
+              csv.to_a[1 .. -2].map { |c| FSR::Model::Tier.new(csv.headers, *c) }
+            when :queue
+              require "fsr/model/queue"
+              csv.to_a[1 .. -2].map { |c| FSR::Model::Queue.new(csv.headers, *c) }
+            when :agent
+              require "fsr/model/agent"
+              csv.to_a[1 .. -2].map { |c| FSR::Model::Agent.new(csv.headers, *c) }
+            end
+          else
+            []
           end
         else
           resp
