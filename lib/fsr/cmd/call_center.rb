@@ -6,11 +6,20 @@ module FSR
       def initialize(fs_socket = nil, config_type = :agent)
         @fs_socket = fs_socket # FSR::CommandSocket obj
         @config_type = config_type
+        @last_repsonse = nil
         @cmd = []
       end
 
       def list_agent
         ["list"]
+      end
+
+      def last_response
+        responses.last
+      end
+
+      def responses
+        @responses ||= []
       end
 
       def list_tier(queue)
@@ -90,6 +99,7 @@ module FSR
       def run(api_method = :api)
         orig_command = "%s %s" % [api_method, raw]
         resp = @fs_socket.say(orig_command)
+        responses << resp
         if @listing
           if resp["body"].match(/^([^|]*\|[^|]*)+/)
             require "csv"
@@ -109,7 +119,7 @@ module FSR
             []
           end
         else
-          resp
+          resp["body"].to_s =~ /\+OK$/
         end
       end
 =begin
