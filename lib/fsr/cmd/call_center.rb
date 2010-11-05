@@ -147,7 +147,7 @@ module FSR
 
       # This method builds the API command to send to the freeswitch event socket
       def raw
-        [@config_type, "callcenter_config", *@cmd].join(" ")
+        ["callcenter_config", @config_type, *@cmd].join(" ")
       end
     end
 
