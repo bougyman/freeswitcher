@@ -47,7 +47,8 @@ module FSR
 
 
       def set_agent(agent, field, value)
-        ["set", field.to_s,"'#{agent}'", "'#{value}'"].compact
+        value = value.respond_to?(:each_char) ? "'#{value}'" : value
+        ["set", field.to_s.gsub("_", "-"),"'#{agent}'", value].compact
       end
 
       def set_tier(agent, queue, field, value)
