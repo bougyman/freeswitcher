@@ -10,9 +10,14 @@ describe "Testing FSR::Cmd::Callcenter" do
     cmd.list.raw.should == "callcenter_config agent list"
   end
 
-  it "FSR::Cmd::Callcenter should add an agent " do
+  it "FSR::Cmd::Callcenter should add an agent defaulting callback" do
     cmd = FSR::Cmd::CallCenter.new nil, :agent
-    cmd.add("1000@default").raw.should == "callcenter_config agent add 1000@default"
+    cmd.add("1000@default").raw.should == "callcenter_config agent add '1000@default' callback"
+  end
+
+  it "FSR::Cmd::Callcenter should add an agent uuidstandby set" do
+    cmd = FSR::Cmd::CallCenter.new nil, :agent
+    cmd.add("1000@default", "uuid-standby").raw.should == "callcenter_config agent add '1000@default' uuid-standby"
   end
 
   it "FSR::Cmd::Callcenter should delete an agent " do

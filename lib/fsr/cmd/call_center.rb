@@ -63,7 +63,8 @@ module FSR
       end
 
       def add_agent(agent, callback = nil)
-        ["add", agent, callback].compact
+        callback ||= 'callback'
+        ["add", "'#{agent}'", callback].compact
       end
 
       def add(agent, *args)
