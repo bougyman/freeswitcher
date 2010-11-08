@@ -32,7 +32,7 @@ describe "Testing FSR::Cmd::Callcenter" do
 
   it "FSR::Cmd::Callcenter should set an attribute with dashes in it on an agent " do
     cmd = FSR::Cmd::CallCenter.new nil, :agent
-    cmd.set("1000@default", :max_no_answer, 10).raw.should == "callcenter_config agent set max-no-answer '1000@default' 10"
+    cmd.set("1000@default", :max_no_answer, 10).raw.should == "callcenter_config agent set max_no_answer '1000@default' 10"
   end
 
   it "FSR::Cmd::Callcenter should list tiers " do

@@ -48,7 +48,7 @@ module FSR
 
       def set_agent(agent, field, value)
         value = value.respond_to?(:each_char) ? "'#{value}'" : value
-        ["set", field.to_s.gsub("_", "-"),"'#{agent}'", value].compact
+        ["set", field.to_s, "'#{agent}'", value].compact
       end
 
       def set_tier(agent, queue, field, value)
@@ -93,7 +93,7 @@ module FSR
       protected :list_agent, :list_tier, :list_queue, :set_agent, :set_tier, :add_tier, :add_agent
       def del(agent, queue = nil)
         @listing = false
-        @cmd = ["del", queue, agent]        
+        @cmd = ["del", queue, agent].compact        
         self
       end
 
