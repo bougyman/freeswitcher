@@ -9,7 +9,7 @@ module FSR
           (class << self; self; end).send(:define_method,h.to_sym) { data[i] }
         end
 
-        @extension, @full_name = name.split("_", 2)
+        @extension, @full_name = name.split("-", 2)
       end
     end
   end
