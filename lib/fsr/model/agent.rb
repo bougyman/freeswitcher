@@ -1,7 +1,9 @@
+require_relative "../model"
 module FSR
   module Model
     class Agent
       attr_reader :fields, :extension, :full_name
+      include FSR::Model
 
       def initialize(headers, *data)
         @fields = headers
