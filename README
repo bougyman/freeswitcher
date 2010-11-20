@@ -129,7 +129,7 @@ A More Advanced Example, Publishing Events To A Web Socket:
     EventMachine.connect(server, port, MyEventListener, auth: 'MyPassword') do |listener|
       FSR::Log.info "MyEventListener connected to #{server} on #{port}"
       EventMachine.start_server('0.0.0.0'), 8080, EventSocket::WebSocket::Connection, {}) do |websocket|
-        MyWebSocketClient.new(reporter, websocket)
+        MyWebSocketClient.new(listener, websocket)
       end
     end
   end
