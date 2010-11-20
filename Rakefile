@@ -26,10 +26,9 @@ GEMSPEC = Gem::Specification.new do |spec|
   spec.test_files = PROJECT_SPECS
   spec.require_path = "lib"
 
-  description = Pathname(PROJECT_README).read
-  spec.description = description
+  spec.description = spec.summary
   spec.rubyforge_project = "freeswitcher"
-  spec.post_install_message = description
+  spec.post_install_message = File.read(PROJECT_README)
 end
 
 import(*Dir['tasks/*rake'])
