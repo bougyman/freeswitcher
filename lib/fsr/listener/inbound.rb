@@ -63,6 +63,7 @@ module FSR
       # param header headers from standard Header and Content protocol
       # param content content from standard Header and Content protocol
       def receive_request(header, content)
+        p [header, content] if $DEBUG
         hash_header = headers_2_hash(header)
         hash_content = headers_2_hash(content)
         event = HeaderAndContentResponse.new({:headers => hash_header, :content => hash_content})
