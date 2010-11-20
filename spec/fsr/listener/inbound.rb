@@ -67,24 +67,24 @@ EM.describe InboundListener do
   end
 
   should "be able to receive an event and call the on_event callback method" do
-    @listener.receive_data("Content-Length: 22\n\nEvent-Name: test_event\n\n")
+    @listener.receive_data("Content-Length: 22\nContent-Type: text/event-plain\n\nEvent-Name: test_event\n\n")
     @listener.recvd_event.first.content[:event_name].should.equal "test_event"
     done
   end
 
   should "be able to add custom event hooks on instances in the pre_session (before_session)" do
-    @listener.receive_data("Content-Length: 18\n\nEvent-Name: CUSTOM\n\n")
+    @listener.receive_data("Content-Length: 18\nContent-Type: text/event-plain\n\nEvent-Name: CUSTOM\n\n")
     @listener.custom_event.should.not.be.nil
     @listener.custom_event.content[:event_name].should == "CUSTOM"
     @listener.custom_event.should.equal @listener.recvd_event.first
-    @listener2.receive_data("Content-Length: 22\n\nEvent-Name: TEST_EVENT\n\n")
+    @listener2.receive_data("Content-Length: 22\nContent-Type: text/event-plain\n\nEvent-Name: TEST_EVENT\n\n")
     @listener2.test_event.content[:event_name].should.equal "TEST_EVENT"
     done
   end
 
   should "be able to add custom event hooks with sub events" do
     listener = InboundListener3.new(1234, {:auth => 'SecretPassword'})
-    @listener.receive_data("Content-Length: 22\n\nEvent-Name: CUSTOM\n\n")
+    @listener.receive_data("Content-Length: 22\nContent-Type: text/event-plain\n\nEvent-Name: CUSTOM\n\n")
     @listener.custom_event.should.equal @listener.recvd_event.first
     done
   end
@@ -92,7 +92,7 @@ EM.describe InboundListener do
   should "be able to add custom event hooks on classes, before instantiation" do
     FSL::Inbound.add_event_hook(:HANGUP_EVENT) { |instance, event| instance.test_event = event }
     listener = InboundListener2.new(1234, {:auth => 'SecretPassword'})
-    listener.receive_data("Content-Length: 24\n\nEvent-Name: HANGUP_EVENT\n\n")
+    listener.receive_data("Content-Length: 24\nContent-Type: text/event-plain\n\nEvent-Name: HANGUP_EVENT\n\n")
     listener.test_event.content[:event_name].should.equal "HANGUP_EVENT"
     done
   end
@@ -100,7 +100,7 @@ EM.describe InboundListener do
   should "be able to add custom event hooks on classes, after instantiation" do
     listener = InboundListener2.new(1234, {:auth => 'SecretPassword'})
     FSL::Inbound.add_event_hook(:HANGUP_EVENT) { |instance, event| instance.test_event = event }
-    listener.receive_data("Content-Length: 24\n\nEvent-Name: HANGUP_EVENT\n\n")
+    listener.receive_data("Content-Length: 24\nContent-Type: text/event-plain\n\nEvent-Name: HANGUP_EVENT\n\n")
     listener.test_event.content[:event_name].should.equal "HANGUP_EVENT"
     done
   end

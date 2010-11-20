@@ -56,27 +56,83 @@ An Inbound Event Socket Listener example using FreeSWITCHeR's hook system:
 --------------------------------------------------------------------------
 
   #!/usr/bin/ruby
-  require 'pp'
   require 'fsr'
   require "fsr/listener/inbound"
 
-  # EXAMPLE 1 
-  # This adds a hook on CHANNEL_CREATE events. You can also create a method to handle the event you're after. See the next example
-  FSL::Inbound.add_event_hook(:CHANNEL_CREATE) { FSR::Log.info "*** [#{event.content[:unique_id]}] Channel created - greetings from the hook!" }
+  class MyEventListener < FSR::Listener::Inbound
+    def before_session
+      # This adds a hook on CHANNEL_CREATE events. You can also create a method to handle the event you're after. See the next example
+      add_event(:CHANNEL_CREATE) { |e| p e }
 
-  # EXAMPLE 2
-  # Define a method to handle CHANNEL_HANGUP events.
-  def custom_channel_hangup_handler(event)
-    FSR::Log.info "*** [#{event.content[:unique_id]}] Channel hangup. The event:"
-    pp event
+      # This adds a hook on CHANNEL_HANGUP events with a callback method.
+      add_event(:CHANNEL_HANGUP) { |e| channel_hangup(e) }
+    end
+
+    def channel_hangup(event)
+      p event
+    end
+
+    def on_event(event)
+      # This gets called for _every_ event that's subscribed (through add_event)
+      p event
+    end
   end
-
-  # This adds a hook for EXAMPLE 2
-  FSL::Inbound.add_event_hook(:CHANNEL_HANGUP) { custom_channel_hangup_handler(event) }
 
 
   # Start FSR Inbound Listener
-  FSR.start_ies!(FSL::Inbound, :host => "localhost", :port => 8021)
+  FSR.start_ies!(MyEventListener, :host => "localhost", :port => 8021)
+
+A More Advanced Example, Publishing Events To A Web Socket:
+-----------------------------------------------------------
+
+  class MyWebSocketClient < Struct.new(:reporter, :socket, :channel_id)
+    Channel = EM::Channel.new
+
+    def initialize(reporter, socket)
+      self.reporter, self.socket = reporter, socket
+      socket.onopen(&method(:on_open))
+      socket.onmessage(&method(:on_message))
+      socket.onclose(&method(:on_close))
+    end
+
+    def on_message(json)
+      msg = JSON.parse(json)
+      FSR::Log.info "Websocket got #{msg}"
+    end
+
+    def send(msg)
+      socket.send(msg.to_json)
+    end
+
+    def on_open
+      FSR::Log.info("Subscribed listener")
+      self.channel_id = Channel.subscribe { |message| send(message) }
+    end
+
+    def on_close
+      Channel.unsubscribe(channel_id)
+      FSR::Log.info("Unsubscribed listener")
+    end
+  end
+
+  # Add the Channel to your event listener
+  class MyEventListener
+    def on_event(event)
+      MyWebSocketClient::Channel << event.content
+    end
+  end
+
+  # Start Listener within and EM.run
+  EM.epoll
+  EM.run do
+    server, port = '127.0.0.1', 8021
+    EventMachine.connect(server, port, MyEventListener, auth: 'MyPassword') do |listener|
+      FSR::Log.info "MyEventListener connected to #{server} on #{port}"
+      EventMachine.start_server('0.0.0.0'), 8080, EventSocket::WebSocket::Connection, {}) do |websocket|
+        MyWebSocketClient.new(reporter, websocket)
+      end
+    end
+  end
 
 
 An Inbound Event Socket Listener example using the on_event callback method instead of hooks:

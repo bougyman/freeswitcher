@@ -15,7 +15,7 @@ GEM_FILES << "spec/fsr_listener_helper.rb" if Pathname("spec/helper.rb").file?
 
 GEMSPEC = Gem::Specification.new do |spec|
   spec.name = "freeswitcher"
-  spec.version = ENV["FSR_VERSION"] || FSR::VERSION
+  spec.version = (ENV["FSR_VERSION"] || FSR::VERSION).dup
   spec.summary = 'A library for interacting with the "FreeSWITCH":http://freeswitch.org telephony platform'
   spec.authors = ["Jayson Vaughn", "Michael Fellinger", "Kevin Berry", "TJ Vanderpoel"]
   spec.email = "FreeSWITCHeR@rubyists.com"

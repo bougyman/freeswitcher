@@ -63,9 +63,22 @@ module FSR
       # param header headers from standard Header and Content protocol
       # param content content from standard Header and Content protocol
       def receive_request(header, content)
-        p [header, content] if $DEBUG
         hash_header = headers_2_hash(header)
-        hash_content = headers_2_hash(content)
+        case hash_header[:content_type]
+        when "command/reply"
+          return handle_reply(header, content)
+        when "text/event-plain"
+          hash_content = headers_2_hash(content)
+        when "text/event-json"
+          require "json"
+          hash_content = JSON.parse(content)
+        when "auth/request"
+          return
+        else
+          FSR::Log.warn "Unhandled request (#{header}, #{content})"
+          return
+        end
+        hash_content ||= {}
         event = HeaderAndContentResponse.new({:headers => hash_header, :content => hash_content})
         event_name = event.content[:event_name].to_s.strip
         unless event_name.empty?
@@ -130,6 +143,15 @@ module FSR
       # return event The triggered event object
       def on_event(event)
         event
+      end
+      
+      # handle_reply is the callback method when a command_reply is received
+      #
+      # param header The header of the data
+      # param content The content of the data
+      # return [header, content]
+      def handle_reply(header, content)
+        [header, content]
       end
 
       # add_event_hook adds an Event to listen for.  When that Event is triggered, it will call the defined block
