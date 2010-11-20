@@ -18,6 +18,7 @@ module FSR
         @subscribed_events = []
         @subscribed_sub_events = []
         @hooks = {}
+        @output_format = args[:output_format] || "json"
       end
 
       # post_init is called upon each "new" socket connection.
@@ -109,9 +110,9 @@ module FSR
         @subscribed_events << event
         @subscribed_sub_events += sub_events
         if custom = @subscribed_events.delete(:CUSTOM)
-          say "event plain #{@subscribed_events.join(" ")} CUSTOM #{@subscribed_sub_events.join(" ")}"
+          say "event #{@output_format} #{@subscribed_events.join(" ")} CUSTOM #{@subscribed_sub_events.join(" ")}"
         else
-          say "event plain #{@subscribed_events.join(" ")}"
+          say "event #{@output_format} #{@subscribed_events.join(" ")}"
         end
       end
 
