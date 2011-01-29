@@ -21,6 +21,15 @@ module FSR
         @output_format = args[:output_format] || "json"
       end
 
+      def connection_completed
+        authorize_and_register_for_events
+      end
+
+      def unbind
+        return unless @host && @port
+        EM.add_timer(1){ reconnect @host, @port }
+      end
+
       # post_init is called upon each "new" socket connection.
       #
       # If Freeswitcher hasn't started listening for inbound socket connections
@@ -30,8 +39,6 @@ module FSR
       def post_init
         if error?
           reconnect_until_succeeding
-        else
-          authorize_and_register_for_events
         end
       end
 

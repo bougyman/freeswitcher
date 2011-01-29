@@ -1,12 +1,13 @@
+require 'ostruct'
+
 module FSR
   module Model
-    class Channel
+    class Channel < OpenStruct
       attr_reader :fields
-      def initialize(headers, *data)
-        @fields = headers
-        @fields.each_with_index do |h,i| 
-          (class << self; self; end).send(:define_method,h.to_sym) { data[i] }
-        end
+
+      def initialize(fields, *data)
+        @fields = fields
+        super(Hash[@fields.zip(data)])
       end
     end
   end
