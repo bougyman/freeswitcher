@@ -74,7 +74,7 @@ module FSR
         when "command/reply"
           return handle_reply(header, content)
         when "text/event-plain"
-          hash_content = headers_2_hash(content)
+          hash_content = headers_2_hash(content).merge(:body => content.split("\n\n",2)[1].to_s)
         when "text/event-json"
           require "json"
           hash_content = JSON.parse(content)
