@@ -1,15 +1,16 @@
-require_relative "../model"
+require 'ostruct'
+
 module FSR
   module Model
-    class Queue
-      attr_reader :fields
-      include FSR::Model
-      def initialize(headers, *data)
-        @fields = headers
-        @fields.each_with_index do |h,i| 
-          (class << self; self; end).send(:define_method,h.to_sym) { data[i] }
-        end
+    class Queue < OpenStruct
+      def initialize(fields, *data)
+        super(Hash[fields.zip(data)])
       end
+
+      def fields
+        raise NotImplementedError, "This class is now an OpenStruct"
+      end
+
     end
   end
 end
