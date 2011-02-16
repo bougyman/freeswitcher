@@ -16,6 +16,6 @@ module FSR
       end
     end
 
-    register(:callcenter, CallCenter)
+    register(:callcenter, Callcenter)
   end
 end
