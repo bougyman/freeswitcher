@@ -40,7 +40,6 @@ module FSR
         if error?
           reconnect_until_succeeding
         end
-        before_session
       end
 
       def reconnect_until_succeeding
@@ -50,7 +49,6 @@ module FSR
            reconnect @host, @port
           else
             timer.cancel
-            authorize_and_register_for_events
           end
         }
       end
@@ -58,6 +56,7 @@ module FSR
       def authorize_and_register_for_events
         FSR::Log.info "Connection established. Authorizing..."
         say("auth #{@auth}")
+        before_session
       end
 
       def before_session 

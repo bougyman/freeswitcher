@@ -9,6 +9,9 @@ EM.spec_backend = EventMachine::Spec::Bacon
 class InboundListener < FSR::Listener::Inbound
   attr_accessor :custom_event
 
+  def post_init
+    before_session
+  end
   # Stub error? out, do this to force session establishment
   # Alternatively, you can 
   #   InboundListener.new.authorize_and_register_for_events
