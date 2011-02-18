@@ -1,13 +1,14 @@
 require "fsr/app"
 module FSR
   module Cmd
-    class SchedHangup < Command
-      DEFAULTS = {when: 1, cause: "UNKNOWN"}
+    class SchedTransfer < Command
+      DEFAULTS = {when: 1, context: "default", dialplan: 'xml'}
       def initialize(fs_socket = nil, args = {})
         @fs_socket = fs_socket # FSR::CommandSocket obj
         args = DEFAULTS.merge(args)
-        @when, @uuid, @cause = args.values_at(:when, :uuid, :cause)
+        @when, @uuid, @to, @context, @dialplan = args.values_at(:when, :uuid, :to, :context, :dialplan)
         raise(ArgumentError, "No uuid given") unless @uuid
+        raise(ArgumentError, "No to: extension given") unless @to
       end
 
       # Send the command to the event socket, using bgapi by default.
@@ -19,10 +20,10 @@ module FSR
 
       # This method builds the API command to send to the freeswitch event socket
       def raw
-        "sched_hangup +#{@when} #{@uuid} #{@cause.dump}"
+        "sched_transfer +#{@when} #{@uuid} #{@to} #{@dialplan} #{@context}"
       end
     end
 
-    register(:sched_hangup, SchedHangup)
+    register(:sched_transfer, SchedTransfer)
   end
 end

@@ -2,7 +2,7 @@ require './spec/helper'
 require "fsr/cmd"
 FSR::Cmd.load_command("sched_hangup")
 
-describe "Testing FSR::Cmd::Callcenter" do
+describe "Testing FSR::Cmd::SchedHangup" do
   ## Scheduled Hangup ##
   it "FSR::Cmd::SchedHangup should schedule a hangup with default " do
     cmd = FSR::Cmd::SchedHangup.new nil, uuid: 1234
@@ -29,7 +29,7 @@ describe "Testing FSR::Cmd::Callcenter" do
     cmd.raw.should == 'sched_hangup +1 1234 "Say \"WHAT?\""'
   end
   
-  it "FSR::Cmd::SchedHangup should raise " do
+  it "FSR::Cmd::SchedHangup should raise when it doesn't get a uuid" do
     lambda { cmd = FSR::Cmd::SchedHangup.new nil, cause: "No Reason" }.should.raise ArgumentError
   end
 end
