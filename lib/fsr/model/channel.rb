@@ -1,5 +1,4 @@
-require 'ostruct'
-
+require_relative '../ostruct'
 module FSR
   module Model
     class Channel < OpenStruct
