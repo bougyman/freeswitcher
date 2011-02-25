@@ -15,11 +15,7 @@ module FSR
 
       def self.from_string(dtmf)
         dtmf.each_char.map { |char|
-          if digit = MAP[MAP.keys.detect { |k| k.include? char }]
-            digit
-          else
-            char
-          end
+          MAP[MAP.keys.detect { |k| k.include? char }] || char
         }.join
       end
     end
