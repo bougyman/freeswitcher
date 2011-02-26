@@ -65,7 +65,7 @@ module FSR
       private :before_session
 
       def handle_request(header, content)
-        false
+        FSR::Log.warn "Unhandled request (#{header}, #{content})"
       end
 
       # receive_request is the callback method when data is recieved from the socket
@@ -85,7 +85,7 @@ module FSR
         when "auth/request"
           return
         else
-          FSR::Log.warn "Unhandled request (#{header}, #{content})" unless handle_request(header, content)
+          handle_request(header, content)
           return
         end
         hash_content ||= {}
