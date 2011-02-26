@@ -26,7 +26,10 @@ module FSR
       end
 
       def unbind
-        return unless @host && @port
+        unless @host && @port
+          Log.warn "@host and @port not set in #{self}, cannot reconnect"
+          return
+        end
         EM.add_timer(1){ reconnect @host, @port }
       end
 
