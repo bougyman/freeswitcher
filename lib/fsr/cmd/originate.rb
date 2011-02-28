@@ -1,4 +1,4 @@
-require "fsr/app"
+require "fsr/cmd"
 module FSR
   module Cmd
     class Originate < Command
