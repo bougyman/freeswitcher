@@ -2,6 +2,7 @@ require 'rake/clean'
 require "rubygems"
 require "./lib/fsr"
 require "pathname"
+ENV["RUBYLIB"] = ".:#{ENV['RUBYLIB']}"
 
 PROJECT_COPYRIGHT = Pathname(__FILE__).dirname.join("License.txt").read
 PROJECT_README = Pathname(__FILE__).dirname.join("README").expand_path.to_s
