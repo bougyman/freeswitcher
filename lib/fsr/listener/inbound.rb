@@ -57,9 +57,8 @@ module FSR
       end
 
       def authorize_and_register_for_events
-        FSR::Log.info "Connection established. Authorizing..."
+        FSR::Log.info "Establishing Connection #{@host}."
         say("auth #{@auth}")
-        FSR::Log.info "#{@host} Connected."
         before_session
       end
 
@@ -80,6 +79,7 @@ module FSR
         hash_header = headers_2_hash(header)
         case hash_header[:content_type]
         when "command/reply"
+          FSR::Log.info "#{@host} Authorized!" if hash_header[:reply_text] == "+OK accepted"
           return handle_reply(header, content)
         when "text/event-plain"
           hash_content = headers_2_hash(content).merge(:body => content.split("\n\n",2)[1].to_s)
@@ -87,6 +87,7 @@ module FSR
           require "json"
           hash_content = JSON.parse(content)
         when "auth/request"
+          FSR::Log.info "#{@host} Authorizing..."
           return
         else
           handle_request(header, content)
@@ -165,7 +166,6 @@ module FSR
       # param content The content of the data
       # return [header, content]
       def handle_reply(header, content)
-        [header, content]
       end
 
       # add_event_hook adds an Event to listen for.  When that Event is triggered, it will call the defined block
