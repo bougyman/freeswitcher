@@ -59,6 +59,7 @@ module FSR
       def authorize_and_register_for_events
         FSR::Log.info "Connection established. Authorizing..."
         say("auth #{@auth}")
+        FSR::Log.info "#{@host} Connected."
         before_session
       end
 

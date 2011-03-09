@@ -33,27 +33,27 @@ module FSR
         @fs_socket.say(conf_command)
       end
 
-      # This method builds the API command to send to the freeswitch event socket
-      def raw
+      def arguments
         target_options = target_options.keys.sort { |a,b| a.to_s <=> b.to_s }.map { |k| "%s=%s" % [k, orginate_options[k]] }.join(",") if target_options
+        conference_name << "@#{profile}" if profile
+        if pin
+          conference_name << "+#{pin}"
+          conference_name << "+#{flags}" if flags
+        end
+        args = [conference_name]
+        args << action if action
 
-        conf_command = "conference #{conference_name}"
-        conf_command = "#{conf_command}@#{profile}" if profile
-        conf_command = "#{conf_command}+#{pin}" if pin
-        conf_command = "#{conf_command}+#{flags}" if flags
-        conf_command = "#{conf_command} #{action}" if action
-
-        if target_options
-          conf_command = "#{conf_command} {#{target_options}}#{target}" if target
-        else
-          conf_command = "#{conf_command} #{target}" if target
+        if target
+          @target = "{#{target_options}}#{target}" if target_options
+          args << target
         end
 
-        if action == :dtmf
-          conf_command = "#{conf_command} #{digits}" if digits
-        end
+        args << digits if action == :dtmf
+        args.compact
+      end
 
-        conf_command
+      def raw
+        ["conference", *arguments].join(" ")
       end
 
     end
