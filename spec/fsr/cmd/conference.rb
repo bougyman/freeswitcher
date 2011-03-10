@@ -28,9 +28,19 @@ describe "Testing FSR::Cmd::Conference" do
       message.should.match(/Cannot kick without :target/)
   end
 
-  it "Puts callee into conference" do
+  it "Should require target_options to be a hash" do
+    lambda { FSR::Cmd::Conference.new(nil, :conference_name => 1001, :action => :dial, :target => "user/1000", :target_options => 1) }.should.raise(ArgumentError).
+      message.should.match(/:target_options must be a hash/)
+  end
+
+  it "Dials and puts callee into conference" do
     conference = FSR::Cmd::Conference.new(nil, :conference_name => 1001, :action => :dial, :target => "user/1000")
     conference.raw.should == "conference 1001 dial user/1000"
+  end
+
+  it "Dials with :target_option" do
+    conference = FSR::Cmd::Conference.new(nil, :conference_name => 1001, :action => :dial, :target => "user/1000", :target_options => {:ignore_early_media => true})
+    conference.raw.should == "conference 1001 dial {ignore_early_media=true}user/1000"
   end
 
   it "Kicks member out of conference" do
