@@ -34,7 +34,7 @@ module FSR
       end
 
       def arguments
-        @target_options = target_options.keys.sort { |a,b| a.to_s <=> b.to_s }.map { |k| "%s=%s" % [k, target_options[k]] }.join(",") if target_options
+        target_options = @target_options.keys.sort { |a,b| a.to_s <=> b.to_s }.map { |k| "%s=%s" % [k, @target_options[k]] }.join(",") if @target_options
         conference_name << "@#{profile}" if profile
         conference_name << "+#{pin}" if pin
         conference_name << "+#{flags}" if flags
