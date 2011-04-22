@@ -30,6 +30,12 @@ module FSR
         ["list", queue].compact
       end
 
+      def list_tiers(queue=nil)
+        @listing = true
+        @cmd = ["list tiers", queue].compact
+        self
+      end
+
       def list(*args)
         @listing = true
         @cmd = case @config_type

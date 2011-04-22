@@ -36,8 +36,8 @@ describe "Testing FSR::Cmd::Callcenter" do
   end
 
   it "FSR::Cmd::Callcenter should list tiers " do
-    cmd = FSR::Cmd::CallCenter.new nil, :tier
-    cmd.list("helpdesk@default").raw.should == "callcenter_config tier list helpdesk@default"
+    cmd = FSR::Cmd::CallCenter.new nil, :queue
+    cmd.list_tiers("helpdesk@default").raw.should == "callcenter_config queue list tiers helpdesk@default"
   end
 
   it "FSR::Cmd::Callcenter should add a tier " do
