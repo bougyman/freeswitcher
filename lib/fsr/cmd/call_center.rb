@@ -22,7 +22,7 @@ module FSR
         @responses ||= []
       end
 
-      def list_tier(queue)
+      def list_tier(queue = nil)
         ["list", queue]
       end
 
