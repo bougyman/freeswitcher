@@ -85,7 +85,10 @@ module FSR
           hash_content = headers_2_hash(content).merge(:body => content.split("\n\n",2)[1].to_s)
         when "text/event-json"
           require "json"
-          hash_content = JSON.parse(content)
+          hash_content = {}
+          JSON.parse(content).each do |k, v|
+            hash_content[k.downcase.gsub(/-/,"_").intern] = v
+          end 
         when "auth/request"
           FSR::Log.info "#{@host} Authorizing..."
           return
