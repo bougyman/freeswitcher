@@ -10,11 +10,6 @@ module FSR
       def arguments
         @cause
       end
-
-      def sendmsg
-        "call-command: execute\nexecute-app-name: %s\nexecute-app-arg: %s\n\n" % [app_name, arguments]
-      end
-
     end
 
     register(:hangup, Hangup)
